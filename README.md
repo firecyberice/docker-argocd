@@ -62,7 +62,7 @@ configs:
     extra:
       gpg.privkey.asc: |
         -----BEGIN PGP PRIVATE KEY BLOCK-----
-        
+
         ...
         -----END PGP PRIVATE KEY BLOCK-----
 ```
