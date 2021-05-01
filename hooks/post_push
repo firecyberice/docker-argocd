@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+source VERSIONS
+
+retag(){
+  local NEW_TAG
+  NEW_TAG=${1}
+  docker image tag ${IMAGE_NAME} ${DOCKER_REPO}:${NEW_TAG}
+  docker image push ${DOCKER_REPO}:${NEW_TAG}
+}
+
+
+IMAGE_TAG=${ARGOCD_VERSION##*:}
+retag ${IMAGE_TAG}
+
+exit $?
+
+GIT_TAG=$(git describe --tags)
+NEW_COMMITS=$(git rev-list ${GIT_TAG}..HEAD --count)
+retag ${GIT_TAG}_${NEW_COMMITS}
