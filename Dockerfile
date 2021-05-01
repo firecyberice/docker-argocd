@@ -1,9 +1,12 @@
+ARG ARGOCD_VERSION=quay.io/argoproj/argocd:v2.0.1
+
 FROM golang:1.16 as builder
-RUN git clone --branch=20200403-1 --depth=1 https://github.com/camptocamp/helm-sops && \
+ARG HELM_SOPS_VERSION=20201003-1
+RUN git clone --branch=${HELM_SOPS_VERSION} --depth=1 https://github.com/camptocamp/helm-sops && \
     cd helm-sops && \
     go build
 
-FROM argoproj/argocd:v2.0.0
+FROM ${ARGOCD_VERSION} as release
 USER root
 COPY argocd-repo-server-wrapper /usr/local/bin/
 COPY --from=builder /go/helm-sops/helm-sops /usr/local/bin/
