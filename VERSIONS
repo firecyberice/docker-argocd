@@ -1,2 +1,2 @@
-ARGOCD_VERSION=quay.io/argoproj/argocd:v2.0.4
+ARGOCD_VERSION=quay.io/argoproj/argocd:v2.1.2
 HELM_SOPS_VERSION=20201003-1
