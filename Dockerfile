@@ -27,9 +27,7 @@ RUN cd /usr/local/bin && \
     mv argocd-repo-server-wrapper argocd-repo-server && \
     chmod 755 argocd-repo-server && \
     mv helm _helm && \
-    mv helm2 _helm2 && \
-    mv helm-sops helm && \
-    ln helm helm2
+    mv helm-sops helm
 
 COPY --from=downloader /usr/local/bin/helmfile /usr/local/bin/helmfile
 ARG HELM_DIFF_VERSION="3.4.0"
@@ -50,4 +48,4 @@ RUN helm plugin install https://github.com/databus23/helm-diff --version ${HELM_
     helm plugin install https://github.com/hypnoglow/helm-s3.git --version ${HELM_S3_VERSION} && \
     helm plugin install https://github.com/mumoshu/helm-x --version ${HELM_X_VERSION} && \
     helm plugin install https://github.com/aslafy-z/helm-git.git --version ${HELM_GIT_VERSION}
-#    helm plugin install https://github.com/zendesk/helm-secrets --version ${HELM_SECRETS_VERSION} && \
+#    helm plugin install https://github.com/jkroepke/helm-secrets --version ${HELM_SECRETS_VERSION} && \
