@@ -5,23 +5,24 @@ ARG HELM_SOPS_VERSION=20201003-1
 RUN git clone --branch=${HELM_SOPS_VERSION} --depth=1 https://github.com/camptocamp/helm-sops && \
     cd helm-sops && \
     go build
-RUN wget -O /tmp/helmfile https://github.com/roboll/helmfile/releases/download/v0.144.0/helmfile_linux_amd64 && chmod +x /tmp/helmfile
-RUN wget -O /tmp/yq https://github.com/mikefarah/yq/releases/download/v4.25.1/yq_linux_amd64 && chmod +x /tmp/yq
-
 
 FROM alpine:latest AS downloader
 RUN apk add --no-cache curl
-ARG HELMFILE_VERSION="v0.140.0"
-RUN curl -o /usr/local/bin/helmfile -L https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_linux_amd64 && \
+ARG HELMFILE_VERSION="v0.144.0"
+RUN curl -sLo /usr/local/bin/helmfile https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_linux_amd64 && \
     chmod +x /usr/local/bin/helmfile
+ARG YQ_VERSION=v4.25.1
+RUN curl -sLo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 && \
+    chmod +x /usr/local/bin/yq
+ARG SOPS_VERSION=v3.7.3
+RUN curl -sLo /usr/local/bin/sops https://github.com/mozilla/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux.amd64 && \
+    chmod +x /usr/local/bin/sops
 
 FROM ${ARGOCD_VERSION} as release
 USER root
 COPY argocd-repo-server-wrapper /usr/local/bin/
 COPY argocd-helmfile /usr/local/bin/
 COPY --from=builder /go/helm-sops/helm-sops /usr/local/bin/
-COPY --from=builder /tmp/helmfile /usr/local/bin/
-COPY --from=builder /tmp/yq /usr/local/bin/
 RUN cd /usr/local/bin && \
     mv argocd-repo-server _argocd-repo-server && \
     mv argocd-repo-server-wrapper argocd-repo-server && \
@@ -29,7 +30,8 @@ RUN cd /usr/local/bin && \
     mv helm _helm && \
     mv helm-sops helm
 
-COPY --from=downloader /usr/local/bin/helmfile /usr/local/bin/helmfile
+COPY --from=downloader /usr/local/bin/ /usr/local/bin/
+
 ARG HELM_DIFF_VERSION="3.4.0"
 ARG HELM_SECRETS_VERSION="2.0.3"
 ARG HELM_S3_VERSION="0.10.0"
