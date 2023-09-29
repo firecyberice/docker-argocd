@@ -1,6 +1,7 @@
 ARG ARGOCD_VERSION=quay.io/argoproj/argocd:v2.3.4
+ARG GOLANG_VERSION=1.21
 
-FROM golang:1.17 as builder
+FROM golang:${GOLANG_VERSION} as builder
 ARG HELM_SOPS_VERSION=20201003-1
 RUN git clone --branch=${HELM_SOPS_VERSION} --depth=1 https://github.com/camptocamp/helm-sops && \
     cd helm-sops && \
@@ -9,7 +10,7 @@ RUN git clone --branch=${HELM_SOPS_VERSION} --depth=1 https://github.com/camptoc
 FROM alpine:latest AS downloader
 RUN apk add --no-cache curl
 ARG HELMFILE_VERSION="v0.144.0"
-RUN curl -sLo /usr/local/bin/helmfile https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_linux_amd64 && \
+RUN curl -sLo /usr/local/bin/helmfile https://github.com/helmfile/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_linux_amd64 && \
     chmod +x /usr/local/bin/helmfile
 ARG YQ_VERSION=v4.25.1
 RUN curl -sLo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 && \
